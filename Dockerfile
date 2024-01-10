@@ -1,6 +1,20 @@
 FROM fabric8/java-alpine-openjdk8-jre
-ADD ["target/config-server-0.0.1-SNAPSHOT-exec.jar", "app.jar"]
-EXPOSE 8888 8787
+
+WORKDIR /application
+
+RUN apk --no-cache add maven openjdk8
+
+COPY . /application
+RUN mvn clean package -DskipTests=true
+
+ENV JAR_FILE_NAME=config-server-0.0.1-SNAPSHOT-exec.jar
+RUN cp /application/target/$JAR_FILE_NAME app-new.jar
+
+ENV JAVA_APP_JAR=app-new.jar
+
+EXPOSE ${port_8787} ${port_8888}
+
 ENV JAVA_OPTS="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8787,suspend=n"
-RUN sh -c 'touch /app.jar'
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -Dspring.profiles.active=docker -jar /app.jar" ]
+RUN sh -c 'touch /app-new.jar'
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -Dspring.profiles.active=docker -jar $JAVA_APP_JAR"]
