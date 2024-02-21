@@ -25,7 +25,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'github-cre', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         git branch: 'main', 
-                            url: "https://${USERNAME}:${PASSWORD}@github.com/amanravi-squareops/config-server.git"
+                            url: "https://${USERNAME}:${PASSWORD}@github.com/amanravi-squareops/springboot-helm.git"
                     }
                     sh '''
                     cd config-server
